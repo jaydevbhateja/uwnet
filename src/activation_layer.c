@@ -18,9 +18,46 @@ matrix forward_activation_layer(layer l, matrix x)
     ACTIVATION a = l.activation;
     matrix y = copy_matrix(x);
 
-    // TODO: 2.1
-    // apply the activation function to matrix y
-    // logistic(x) = 1/(1+e^(-x))
+    if (a == SOFTMAX) {
+	int i, j;
+        for(i = 0; i < y.rows; ++i) {
+	    float s = 0;
+	    for(j = 0; j < y.cols; ++j) {
+		y.data[i*y.cols + j] = exp(y.data[i*y.cols + j]);
+		s += y.data[i*y.cols + j];
+	    }
+	    for(j = 0; j < y.cols; ++j) {
+	        y.data[i*y.cols + j] /= s;
+	    }
+	}
+    } else if (a == RELU) {
+	int i, j;
+        for(i = 0; i < y.rows; ++i) {
+	    for(j = 0; j < y.cols; ++j) {
+	        if (y.data[i*y.cols + j] < 0) {
+		    y.data[i*y.cols + j] = 0;
+		}
+	    }
+	}
+    } else if (a == LRELU) {
+	int i, j;
+        for(i = 0; i < y.rows; ++i) {
+	    for(j = 0; j < y.cols; ++j) {
+	        if (y.data[i*y.cols + j] < 0) {
+		    y.data[i*y.cols + j] = 0;
+		}
+	    }
+	}
+    } else if (a == LOGISTIC) {
+        int i, j;
+	for(i = 0; i < y.rows; ++i) {
+	    for(j = 0; j < y.cols; ++j) {
+	        y.data[i*y.cols + j] = 1 / (1 + exp(-1 * y.data[i*y.cols + j]));
+	    }
+	}
+    }
+}
+
     // relu(x)     = x if x > 0 else 0
     // lrelu(x)    = x if x > 0 else .01 * x
     // softmax(x)  = e^{x_i} / sum(e^{x_j}) for all x_j in the same row 
